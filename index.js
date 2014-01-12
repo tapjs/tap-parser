@@ -37,7 +37,13 @@ function Parser (cb) {
         if (this._line.length) this._online(this._line);
         this._finished();
     });
-    
+
+    this.on('extra', this._onextra);
+    this.on('comment', (function(text) {
+        // Add the comment prefix back to restore the original line text:
+        this._onextra('# ' + text);
+    }).bind(this));
+
     this.on('assert', this._onassert);
     this.on('plan', this._onplan);
     this.on('parseError', function (err) {
@@ -71,6 +77,20 @@ Parser.prototype._onassert = function (res) {
             message: 'assert out of order'
         });
     }
+};
+
+// If an assert line has trailing extra lines, append them to
+// the parsed assertion's 'extra' attribute.
+Parser.prototype._onextra = function (line) {
+    var results = this.results;
+
+    // Don't do anything with lines before assertions or after a plan that
+    // comes at the end of the TAP output:
+    var last_assert = results.asserts[results.asserts.length - 1];
+    var end_of_output = (results.plan && results.asserts.length);
+    if (!last_assert || end_of_output) return;
+
+    last_assert.extra += (line + '\n');
 };
 
 Parser.prototype._onplan = function (plan, skip_reason) {
@@ -114,7 +134,8 @@ Parser.prototype._online = function (line) {
         var asrt = {
             ok: ok,
             number: num,
-            name: name
+            name: name,
+            extra: ''
         };
         
         if (num === undefined) {
@@ -137,7 +158,7 @@ Parser.prototype._online = function (line) {
         },
         m[3]); // reason, if SKIP
     }
-    else this.emit('extra', line)
+    else this.emit('extra', line);
 };
 
 Parser.prototype._checkAssertionStart = function () {
