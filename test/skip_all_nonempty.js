@@ -14,7 +14,8 @@ expected.comments = [ 'TAP emitted by Test::More 0.98' ];
 expected.asserts.push({
     ok: true,
     number: 1,
-    name: 'found some spare flux in bottom drawer'
+    name: 'found some spare flux in bottom drawer',
+    extra: ''
 });
 
 test('simple OK + skip_reason', function (t) {

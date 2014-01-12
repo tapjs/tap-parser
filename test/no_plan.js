@@ -18,26 +18,30 @@ expected.comments = [ 'beep', 'boop' ];
 expected.asserts.push({
     ok: true,
     number: 1,
-    name: 'should be equal'
+    name: 'should be equal',
+    extra: ''
 });
 expected.asserts.push({
     ok: true,
     number: 2,
-    name: 'should be equivalent'
+    name: 'should be equivalent',
+    extra: '# boop\n'
 });
 expected.asserts.push({
     ok: true,
     number: 3,
-    name: 'should be equal'
+    name: 'should be equal',
+    extra: ''
 });
 expected.asserts.push({ 
     ok: true,
     number: 4,
-    name: '(unnamed assert)'
+    name: '(unnamed assert)',
+    extra: ''
 });
 
 test('no plan', function (t) {
-    t.plan(6 * 2 + 4 + 2);
+    t.plan(6 * 2 + 4 * 2 + 2);
     
     var p = parser(onresults);
     p.on('results', onresults);
@@ -45,7 +49,6 @@ test('no plan', function (t) {
     var asserts = [];
     p.on('assert', function (assert) {
         asserts.push(assert);
-        t.same(assert, expected.asserts.shift(), 'next assert');
     });
     
     p.on('plan', function (plan) {
@@ -68,5 +71,8 @@ test('no plan', function (t) {
         t.same(asserts.length, 4, 'onresults: asserts.length');
         t.same(results.asserts, asserts, 'onresults: asserts');
         t.equal(expected.comments.length, 0, 'onresults: leftover comments');
+        asserts.forEach(function(assert, index) {
+            t.same(assert, expected.asserts[index]);
+        });
     }
 });
