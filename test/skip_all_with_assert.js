@@ -14,7 +14,8 @@ expected.comments = [ 'TAP emitted by Test::More 0.98' ];
 expected.asserts.push({
     ok: true,
     number: 1,
-    name: 'should not be asserting'
+    name: 'should not be asserting',
+    extra: ''
 });
 
 test('simple ok', function (t) {

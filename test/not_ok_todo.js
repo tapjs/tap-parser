@@ -24,27 +24,31 @@ expected.comments = [
 expected.asserts.push({
     ok: true,
     number: 1,
-    name: 'should be equal'
+    name: 'should be equal',
+    extra: ''
 });
 expected.asserts.push({
     ok: false,
     number: 2,
     name: 'should be equivalent',
+    extra: '# boop\n',
     todo: 'but we will fix it later'
 });
 expected.asserts.push({
     ok: true,
     number: 3,
-    name: 'should be equal'
+    name: 'should be equal',
+    extra: ''
 });
 expected.asserts.push({ 
     ok: true,
     number: 4,
-    name: '(unnamed assert)'
+    name: '(unnamed assert)',
+    extra: '\n'
 });
 
 test('not ok, but todo', function (t) {
-    t.plan(7 * 2 + 1 + 3 + 4);
+    t.plan(7 * 2 + 1 + 3 + 4 * 2);
     
     var p = parser(onresults);
     p.on('results', onresults);
@@ -52,7 +56,6 @@ test('not ok, but todo', function (t) {
     var asserts = [];
     p.on('assert', function (assert) {
         asserts.push(assert);
-        t.same(assert, expected.asserts.shift(), 'next assert');
     });
     
     p.on('plan', function (plan) {
@@ -76,5 +79,8 @@ test('not ok, but todo', function (t) {
         t.equal(results.todo.length, 1, 'onresults: todo.length');
         t.same(results.errors, []);
         t.same(results.asserts, asserts);
+        asserts.forEach(function(assert, index) {
+            t.same(assert, expected.asserts[index]);
+        });
     }
 });

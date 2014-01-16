@@ -24,26 +24,30 @@ expected.comments = [ 'beep', 'boop', 'tests 4', 'pass  4', 'ok' ];
 expected.asserts.push({
     ok: true,
     number: 8,
-    name: 'should be equal'
+    name: 'should be equal',
+    extra: ''
 });
 expected.asserts.push({
     ok: true,
     number: 9,
-    name: 'should be equivalent'
+    name: 'should be equivalent',
+    extra: '# boop\n'
 });
 expected.asserts.push({
     ok: true,
     number: 10,
-    name: 'should be equal'
+    name: 'should be equal',
+    extra: ''
 });
 expected.asserts.push({ 
     ok: true,
     number: 11,
-    name: '(unnamed assert)'
+    name: '(unnamed assert)',
+    extra: '\n'
 });
 
 test('non-1 test offset', function (t) {
-    t.plan(4 * 2 + 1 + 4 + 5);
+    t.plan(4 * 2 + 1 + 4 * 2 + 5);
     
     var p = parser(onresults);
     p.on('results', onresults);
@@ -51,7 +55,6 @@ test('non-1 test offset', function (t) {
     var asserts = [];
     p.on('assert', function (assert) {
         asserts.push(assert);
-        t.same(assert, expected.asserts.shift());
     });
     
     p.on('plan', function (plan) {
@@ -72,5 +75,8 @@ test('non-1 test offset', function (t) {
         t.same(results.errors, []);
         t.same(asserts.length, 4);
         t.same(results.asserts, asserts);
+        asserts.forEach(function(assert, index) {
+            t.same(assert, expected.asserts[index]);
+        });
     }
 });

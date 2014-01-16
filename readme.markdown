@@ -42,15 +42,15 @@ parse the output:
 $ node test.js | node parse.js
 { ok: true,
   asserts: 
-   [ { ok: true, number: 1, name: 'should be equal' },
-     { ok: true, number: 2, name: 'should be equivalent' },
-     { ok: true, number: 3, name: 'should be equal' },
-     { ok: true, number: 4, name: '(unnamed assert)' } ],
+   [ { ok: true, number: 1, name: 'should be equal', extra: '' },
+     { ok: true, number: 2, name: 'should be equivalent', extra: '# boop\n' },
+     { ok: true, number: 3, name: 'should be equal', extra: '' },
+     { ok: true, number: 4, name: '(unnamed assert)', extra: '' } ],
   pass: 
-   [ { ok: true, number: 1, name: 'should be equal' },
-     { ok: true, number: 2, name: 'should be equivalent' },
-     { ok: true, number: 3, name: 'should be equal' },
-     { ok: true, number: 4, name: '(unnamed assert)' } ],
+   [ { ok: true, number: 1, name: 'should be equal', extra: '' },
+     { ok: true, number: 2, name: 'should be equivalent', extra: '# boop\n' },
+     { ok: true, number: 3, name: 'should be equal', extra: '' },
+     { ok: true, number: 4, name: '(unnamed assert)', extra: '' } ],
   fail: [],
   todo: [],
   errors: [],

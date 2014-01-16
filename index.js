@@ -37,7 +37,13 @@ function Parser (cb) {
         if (this._line.length) this._online(this._line);
         this._finished();
     });
-    
+
+    this.on('extra', this._onextra);
+    this.on('comment', (function(text) {
+        // Add the comment prefix back to restore the original line text:
+        this._onextra('# ' + text);
+    }).bind(this));
+
     this.on('assert', this._onassert);
     this.on('plan', this._onplan);
     this.on('parseError', function (err) {
@@ -71,6 +77,25 @@ Parser.prototype._onassert = function (res) {
             message: 'assert out of order'
         });
     }
+};
+
+// If an assert line has trailing extra lines, append them to
+// the parsed assertion's 'extra' attribute.
+Parser.prototype._onextra = function (line) {
+    var results = this.results;
+    if (results.plan) {
+        // Check if there are no more extra lines to track
+        var test_count = (results.plan.end - results.plan.start + 1);  // eg. 1..4 => 4 tests
+        var is_end_comment = (results.asserts.length >= test_count) && (/^#/).test(line);
+        if (this._plan_at_end || is_end_comment) this._done_asserts = true;
+    } else {
+        // Save a record of the plan being at the end, for handling edge cases
+        // with extra lines at the end of the TAP output.
+        this._plan_at_end = true;
+    }
+
+    var latest_assert = results.asserts[results.asserts.length - 1];
+    if (latest_assert && !this._done_asserts) latest_assert.extra += (line + '\n');
 };
 
 Parser.prototype._onplan = function (plan, skip_reason) {
@@ -114,7 +139,8 @@ Parser.prototype._online = function (line) {
         var asrt = {
             ok: ok,
             number: num,
-            name: name
+            name: name,
+            extra: ''
         };
         
         if (num === undefined) {
@@ -137,7 +163,7 @@ Parser.prototype._online = function (line) {
         },
         m[3]); // reason, if SKIP
     }
-    else this.emit('extra', line)
+    else this.emit('extra', line);
 };
 
 Parser.prototype._checkAssertionStart = function () {
