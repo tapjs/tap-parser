@@ -83,20 +83,19 @@ Parser.prototype._onassert = function (res) {
 // the parsed assertion's 'extra' attribute.
 Parser.prototype._onextra = function (line) {
     var results = this.results;
-    if (!results.plan) this._plan_at_end = true;
-
-    // Don't do anything with lines before assertions, or comments
-    // at the end of the TAP output:
-    var latest_assert = results.asserts[results.asserts.length - 1];
     if (results.plan) {
-        if (this._plan_at_end) this._is_done = true;
-        var total_tests = results.plan && (results.plan.end - results.plan.start + 1);
-        var is_comment = (/^#/).test(line);
-        if (results.asserts.length >= total_tests && is_comment) this._is_done = true;
+        // Check if there are no more extra lines to track
+        var test_count = (results.plan.end - results.plan.start + 1);  // eg. 1..4 => 4 tests
+        var is_end_comment = (results.asserts.length >= test_count) && (/^#/).test(line);
+        if (this._plan_at_end || is_end_comment) this._done_asserts = true;
+    } else {
+        // Save a record of the plan being at the end, for handling edge cases
+        // with extra lines at the end of the TAP output.
+        this._plan_at_end = true;
     }
-    if (!latest_assert || this._is_done) return;
 
-    latest_assert.extra += (line + '\n');
+    var latest_assert = results.asserts[results.asserts.length - 1];
+    if (latest_assert && !this._done_asserts) latest_assert.extra += (line + '\n');
 };
 
 Parser.prototype._onplan = function (plan, skip_reason) {
