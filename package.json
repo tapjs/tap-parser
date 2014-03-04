@@ -4,7 +4,8 @@
   "description": "parse the test anything protocol",
   "main": "index.js",
   "dependencies": {
-    "inherits": "~2.0.1"
+    "inherits": "~2.0.1",
+    "readable-stream": "~1.0.26"
   },
   "devDependencies": {
     "tape": "~2.3.2",
