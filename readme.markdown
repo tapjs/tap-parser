@@ -54,6 +54,7 @@ $ node test.js | node parse.js
   fail: [],
   todo: [],
   errors: [],
+  diags: [],
   plan: { start: 1, end: 4 } }
 ```
 
@@ -111,6 +112,7 @@ If the test is [completely skipped](http://podwiki.hexten.net/TAP/TAP.html?page=
   pass: [],
   fail: [],
   errors: [],
+  diags: [],
   plan: 
    { start: 1,
      end: 0,
@@ -122,6 +124,17 @@ If the test is [completely skipped](http://podwiki.hexten.net/TAP/TAP.html?page=
 
 A `/^TAP version (\d+)/` line emits a `'version'` event with a version number or
 string.
+
+## p.on('diag', function (diag, text) {})
+
+Any lines between `/^\s+---` and `/^\s...` are parsed as YAML and returned as
+a diagnostic JSON object, meant to provide extra info about the previous assert.
+
+A plaintext version of the message is also available as the second arg.
+
+After the event is emitted, the `diag` object will be attached to the associated assert.
+
+If there is no assert to associate a `diag` with, an error will occur.
 
 ## p.on('extra', function (extra) {})
 

@@ -84,11 +84,11 @@ Parser.prototype._onassert = function (res) {
     }
 };
 
-Parser.prototype._ondiag = function (diag) {
+Parser.prototype._ondiag = function (diag, text) {
     var results = this.results;
     results.diags.push(diag);
 
-    var prevAssert = results.asserts[results.asserts.length - 2];
+    var prevAssert = results.asserts[results.asserts.length - 1];
     if (prevAssert) {
         prevAssert.diag = diag;
     } else {
@@ -133,7 +133,8 @@ Parser.prototype._online = function (line) {
         else {
             this._inDiag = false;
             try {
-                this.emit('diag', yaml.safeLoad(this._diagLines.join('\n')));
+                var diagText = this._diagLines.join('\n');
+                this.emit('diag', yaml.safeLoad(diagText), diagText);
             } catch (e) {
                 this.emit('parseError', {
                     message: 'failed to parse yaml in diagnostic block',
