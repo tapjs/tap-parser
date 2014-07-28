@@ -1,5 +1,6 @@
 var test = require('tape');
 var parser = require('../');
+var TapProducer = require('tap').Producer;
 
 var lines = [
     'TAP version 13',
@@ -43,7 +44,7 @@ expected.asserts.push({
 });
 
 test('simple ok', function (t) {
-    t.plan(4 * 2 + 1 + 4 + 5);
+    t.plan(5 * 2 + 1 + 4 + 5);
     
     var p = parser(onresults);
     p.on('results', onresults);
@@ -72,5 +73,7 @@ test('simple ok', function (t) {
         t.same(results.errors, []);
         t.same(asserts.length, 4);
         t.same(results.asserts, asserts);
+        var tapResults = TapProducer.encode(results.asserts_with_user_comments);
+        t.same(tapResults, lines.join('\n') + '\n');
     }
 });

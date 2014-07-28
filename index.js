@@ -10,7 +10,8 @@ var re = {
     plan: /^(\d+)\.\.(\d+)\b(?:\s+#\s+SKIP\s+(.*)$)?/,
     comment: /^#\s*(.+)/,
     version: /^TAP\s+version\s+(\d+)/i,
-    label_todo: /^(.*?)\s*#\s*TODO\s+(.*)$/
+    label_todo: /^(.*?)\s*#\s*TODO\s+(.*)$/,
+    standard_comment: /^((tests|pass|fail)\s*\d*|ok)/
 };
 
 module.exports = Parser;
@@ -23,6 +24,7 @@ function Parser (cb) {
     
     this.results = {
         ok: undefined,
+        asserts_with_user_comments: [],
         asserts: [],
         pass: [],
         fail: [],
@@ -38,6 +40,7 @@ function Parser (cb) {
         this._finished();
     });
     
+    this.on('comment', this._oncomment);
     this.on('assert', this._onassert);
     this.on('plan', this._onplan);
     this.on('parseError', function (err) {
@@ -57,8 +60,16 @@ Parser.prototype._write = function (chunk, enc, next) {
     next();
 };
 
+Parser.prototype._oncomment = function (res) {
+    var results = this.results;
+    if (!re.standard_comment.test(res)) {
+        results.asserts_with_user_comments.push(res);
+    }
+};
+
 Parser.prototype._onassert = function (res) {
     var results = this.results;
+    results.asserts_with_user_comments.push(res);
     results.asserts.push(res);
     if (!res.ok && !res.todo) results.ok = false;
     var dest = (res.ok ? results.pass : results.fail);

@@ -41,6 +41,13 @@ parse the output:
 ```
 $ node test.js | node parse.js
 { ok: true,
+  asserts_with_user_comments:
+   [ 'beep',
+     { ok: true, number: 1, name: 'should be equal' },
+     { ok: true, number: 2, name: 'should be equivalent' },
+     'boop',
+     { ok: true, number: 3, name: 'should be equal' },
+     { ok: true, number: 4, name: '(unnamed assert)' } ],
   asserts: 
    [ { ok: true, number: 1, name: 'should be equal' },
      { ok: true, number: 2, name: 'should be equivalent' },
@@ -129,6 +136,7 @@ If the test is [completely skipped](http://podwiki.hexten.net/TAP/TAP.html?page=
 
 ```
 { ok: true,
+  asserts_with_user_comments: [],
   asserts: [],
   pass: [],
   fail: [],
@@ -157,8 +165,17 @@ With [npm](https://npmjs.org) do:
 npm install tap-parser
 ```
 
+# usage
+
 You can use [browserify](http://browserify.org) to `require('tap-parser')` in
 the browser.
+
+You can use [node-tap](https://github.com/isaacs/node-tap) to re-encode the 
+parsed results to get the unparsed TAP results again:
+
+```
+var tapResults = require('tap').Producer.encode(results.asserts_with_user_comments);
+```
 
 # license
 
