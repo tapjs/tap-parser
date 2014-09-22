@@ -1,7 +1,7 @@
 {
-  "name": "tap-parser",
+  "name": "tap-parser-yaml",
   "version": "0.7.0",
-  "description": "parse the test anything protocol",
+  "description": "parse the test anything protocol (with yaml diagnostic block parsing)",
   "main": "index.js",
   "bin": {
     "tap-parser": "bin/cmd.js"
@@ -33,9 +33,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/substack/tap-parser.git"
+    "url": "git://github.com/namuol/tap-parser-yaml.git"
   },
-  "homepage": "https://github.com/substack/tap-parser",
+  "homepage": "https://github.com/namuol/tap-parser-yaml",
   "keywords": [
     "tap",
     "test",
