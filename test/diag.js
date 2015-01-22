@@ -13,16 +13,26 @@ var lines = [
     ' foo: "bar"',
     ' ...',
     'ok 4 (unnamed assert)',
-    '1..4',
-    '# tests 4',
-    '# pass  4',
     '',
-    '# ok'
+    'not ok 5 diag with three chars',
+    ' ---',
+    '  operator: deepEqual',
+    '  expected:',
+    '   {}',
+    '  actual:',
+    '   {foo: "bar"}',
+    ' ...',
+    '1..5',
+    '# tests 5',
+    '# pass  4',
+    '# fail 1',
+    '',
+    '# not ok'
 ];
 
 var expected = { asserts: [], comments: [], diags: [] };
 
-expected.comments = [ 'beep', 'boop', 'tests 4', 'pass  4', 'ok' ];
+expected.comments = [ 'beep', 'boop', 'tests 5', 'pass  4', 'fail 1', 'not ok' ];
 
 expected.asserts.push({
     ok: true,
@@ -39,51 +49,61 @@ expected.asserts.push({
     number: 3,
     name: 'should be equal'
 });
-expected.asserts.push({ 
+expected.asserts.push({
     ok: true,
     number: 4,
     name: '(unnamed assert)'
+});
+expected.asserts.push({
+    ok: false,
+    number: 5,
+    name: 'diag with three chars'
 });
 
 expected.diags.push({
     foo: 'bar'
 });
+expected.diags.push({
+    operator: 'deepEqual',
+    actual: {foo: 'bar'},
+    expected: {}
+});
 
 test('simple ok', function (t) {
-    t.plan(4 * 2 + 1 + 4 + 5 + 1);
-    
+    t.plan(5 * 2 + 2 + 4 + 5 + 1);
+
     var p = parser(onresults);
     p.on('results', onresults);
-    
+
     var asserts = [];
     p.on('assert', function (assert) {
         asserts.push(assert);
-        t.same(assert, expected.asserts.shift());
+        t.same(assert, expected.asserts.shift(), 'assert should be the same');
     });
-    
+
     var diags = [];
     p.on('diag', function (diag) {
         diags.push(diag);
-        t.same(diag, expected.diags.shift());
+        t.same(diag, expected.diags.shift(), 'diag should be the same');
     });
 
     p.on('plan', function (plan) {
-        t.same(plan, { start: 1, end: 4 });
+        t.same(plan, { start: 1, end: 5 }, 'plan should be the same');
     });
-    
+
     p.on('comment', function (c) {
-        t.equal(c, expected.comments.shift());
+        t.equal(c, expected.comments.shift(), 'comment should be equal');
     });
-    
+
     for (var i = 0; i < lines.length; i++) {
         p.write(lines[i] + '\n');
     }
     p.end();
-    
+
     function onresults (results) {
-        t.ok(results.ok);
-        t.same(results.errors, []);
-        t.same(asserts.length, 4);
-        t.same(results.asserts, asserts);
+        t.notOk(results.ok, 'tests should not be ok due to one failed test');
+        t.same(results.errors, [], 'errors should be the same');
+        t.same(asserts.length, 5, 'asserts length should be the same');
+        t.same(results.asserts, asserts, 'asserts should be the same');
     }
 });
