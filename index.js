@@ -13,7 +13,7 @@ var re = {
     version: /^TAP\s+version\s+(\d+)/i,
     label_todo: /^(.*?)\s*#\s*TODO\s+(.*)$/,
     diag_open: /^\s+---$/,
-    diag_close: /^\s+...$/
+    diag_close: /^\s+\.\.\.$/
 };
 
 module.exports = Parser;
