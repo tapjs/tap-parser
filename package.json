@@ -1,7 +1,7 @@
 {
-  "name": "tap-parser",
-  "version": "0.7.0",
-  "description": "parse the test anything protocol",
+  "name": "tap-parser-yaml",
+  "version": "0.7.1",
+  "description": "parse the test anything protocol (with yaml diagnostic block parsing)",
   "main": "index.js",
   "bin": {
     "tap-parser": "bin/cmd.js"
@@ -9,7 +9,8 @@
   "dependencies": {
     "inherits": "~2.0.1",
     "minimist": "^0.2.0",
-    "readable-stream": "~1.1.11"
+    "readable-stream": "~1.1.11",
+    "js-yaml": "^3.0.2"
   },
   "devDependencies": {
     "tape": "~2.3.2",
@@ -32,9 +33,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/substack/tap-parser.git"
+    "url": "git://github.com/namuol/tap-parser-yaml.git"
   },
-  "homepage": "https://github.com/substack/tap-parser",
+  "homepage": "https://github.com/namuol/tap-parser-yaml",
   "keywords": [
     "tap",
     "test",
@@ -44,6 +45,11 @@
     "name": "James Halliday",
     "email": "mail@substack.net",
     "url": "http://substack.net"
+  },
+  "contributors": {
+    "name": "Louis Acresti",
+    "email": "louis.acresti@gmail.com",
+    "url": "http://namuol.github.io"
   },
   "license": "MIT"
 }

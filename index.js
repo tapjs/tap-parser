@@ -1,5 +1,6 @@
 var Writable = require('readable-stream').Writable;
 var inherits = require('inherits');
+var yaml = require('js-yaml');
 
 var re = {
     ok: new RegExp([
@@ -10,7 +11,9 @@ var re = {
     plan: /^(\d+)\.\.(\d+)\b(?:\s+#\s+SKIP\s+(.*)$)?/,
     comment: /^#\s*(.+)/,
     version: /^TAP\s+version\s+(\d+)/i,
-    label_todo: /^(.*?)\s*#\s*TODO\s+(.*)$/
+    label_todo: /^(.*?)\s*#\s*TODO\s+(.*)$/,
+    diag_open: /^\s+---$/,
+    diag_close: /^\s+\.\.\.$/
 };
 
 module.exports = Parser;
@@ -24,6 +27,7 @@ function Parser (cb) {
     this.results = {
         ok: undefined,
         asserts: [],
+        diags: [],
         pass: [],
         fail: [],
         todo: [],
@@ -39,6 +43,7 @@ function Parser (cb) {
     });
     
     this.on('assert', this._onassert);
+    this.on('diag', this._ondiag);
     this.on('plan', this._onplan);
     this.on('parseError', function (err) {
         this.results.ok = false;
@@ -79,6 +84,20 @@ Parser.prototype._onassert = function (res) {
     }
 };
 
+Parser.prototype._ondiag = function (diag, text) {
+    var results = this.results;
+    results.diags.push(diag);
+
+    var prevAssert = results.asserts[results.asserts.length - 1];
+    if (prevAssert) {
+        prevAssert.diag = diag;
+    } else {
+        this.emit('parseError', {
+            message: 'no assert to pair with diagnostic'
+        });
+    }
+}
+
 Parser.prototype._onplan = function (plan, skip_reason) {
     var results = this.results;
     
@@ -106,7 +125,34 @@ Parser.prototype._onplan = function (plan, skip_reason) {
  
 Parser.prototype._online = function (line) {
     var m;
-    if (m = re.version.exec(line)) {
+    if (this._inDiag){
+        m = re.diag_close.exec(line);
+        if (!m) {
+            this._diagLines.push(line);
+        }
+        else {
+            this._inDiag = false;
+            try {
+                var diagText = this._diagLines
+                    .join('\n')
+                    // NOTE: tools like substack/tape use object-inspect
+                    // to output actual/expected text, and the only
+                    // incompatibility between that and yaml.safeLoad I found
+                    // was that object-inspect inserts a \' for an actual '
+                    // character inside a string, instead of '' which is what
+                    // yaml expects.
+                    .replace(/\\'/g, "''");
+
+                this.emit('diag', yaml.safeLoad(diagText), diagText);
+            } catch (e) {
+                this.emit('parseError', {
+                    message: 'failed to parse yaml in diagnostic block',
+                    reason: e
+                });
+            }
+        }
+    }
+    else if (m = re.version.exec(line)) {
         var ver = /^\d+(\.\d*)?$/.test(m[1]) ? Number(m[1]) : m[1];
         this.emit('version', ver);
     }
@@ -136,6 +182,10 @@ Parser.prototype._online = function (line) {
             end: Number(m[2])
         },
         m[3]); // reason, if SKIP
+    }
+    else if (m = re.diag_open.exec(line)) {
+        this._inDiag = true;
+        this._diagLines = [];
     }
     else this.emit('extra', line)
 };
