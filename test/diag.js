@@ -22,17 +22,25 @@ var lines = [
     '  actual:',
     '   {foo: "bar"}',
     ' ...',
-    '1..5',
-    '# tests 5',
+    'not ok 6 diag with invalid quote escape from tape object-inspect',
+    ' ---',
+    '  operator: deepEqual',
+    '  expected:',
+    "   {foo: 'bar\\'s'}",
+    '  actual:',
+    "   {foo: 'bar'}",
+    ' ...',
+    '1..6',
+    '# tests 6',
     '# pass  4',
-    '# fail 1',
+    '# fail 2',
     '',
     '# not ok'
 ];
 
 var expected = { asserts: [], comments: [], diags: [] };
 
-expected.comments = [ 'beep', 'boop', 'tests 5', 'pass  4', 'fail 1', 'not ok' ];
+expected.comments = [ 'beep', 'boop', 'tests 6', 'pass  4', 'fail 2', 'not ok' ];
 
 expected.asserts.push({
     ok: true,
@@ -59,6 +67,11 @@ expected.asserts.push({
     number: 5,
     name: 'diag with three chars'
 });
+expected.asserts.push({
+    ok: false,
+    number: 6,
+    name: 'diag with invalid quote escape from tape object-inspect'
+});
 
 expected.diags.push({
     foo: 'bar'
@@ -68,9 +81,25 @@ expected.diags.push({
     actual: {foo: 'bar'},
     expected: {}
 });
+expected.diags.push({
+    operator: 'deepEqual',
+    actual: {foo: 'bar'},
+    expected: {foo: "bar's"}
+});
 
 test('simple ok', function (t) {
-    t.plan(5 * 2 + 2 + 4 + 5 + 1);
+    t.plan(
+        // number of expected.asserts
+        6 +
+        // number of expected.diags
+        3 +
+        // number of comment assertions
+        6 +
+        // number of onresult assertions * 2
+        4 * 2 +
+        // number of plan assertions
+        1
+    );
 
     var p = parser(onresults);
     p.on('results', onresults);
@@ -88,7 +117,7 @@ test('simple ok', function (t) {
     });
 
     p.on('plan', function (plan) {
-        t.same(plan, { start: 1, end: 5 }, 'plan should be the same');
+        t.same(plan, { start: 1, end: 6 }, 'plan should be the same');
     });
 
     p.on('comment', function (c) {
@@ -103,7 +132,7 @@ test('simple ok', function (t) {
     function onresults (results) {
         t.notOk(results.ok, 'tests should not be ok due to one failed test');
         t.same(results.errors, [], 'errors should be the same');
-        t.same(asserts.length, 5, 'asserts length should be the same');
+        t.same(asserts.length, 6, 'asserts length should be the same');
         t.same(results.asserts, asserts, 'asserts should be the same');
     }
 });
