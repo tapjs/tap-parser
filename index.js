@@ -133,7 +133,16 @@ Parser.prototype._online = function (line) {
         else {
             this._inDiag = false;
             try {
-                var diagText = this._diagLines.join('\n');
+                var diagText = this._diagLines
+                    .join('\n')
+                    // NOTE: tools like substack/tape use object-inspect
+                    // to output actual/expected text, and the only
+                    // incompatibility between that and yaml.safeLoad I found
+                    // was that object-inspect inserts a \' for an actual '
+                    // character inside a string, instead of '' which is what
+                    // yaml expects.
+                    .replace(/\\'/g, "''");
+
                 this.emit('diag', yaml.safeLoad(diagText), diagText);
             } catch (e) {
                 this.emit('parseError', {
