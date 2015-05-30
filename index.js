@@ -125,7 +125,7 @@ Parser.prototype.createResult = function (line) {
   if (!testPointRE.test(line))
     return null
 
-  this.emitResult()
+  this.emitResult(line)
   return new Result(line, this.count)
 }
 
@@ -263,7 +263,7 @@ Parser.prototype.bailout = function (reason) {
   this.emit('bailout', reason)
 }
 
-Parser.prototype.emitResult = function () {
+Parser.prototype.emitResult = function (line) {
   if (this.child) {
     this.child.end()
     this.child = null
@@ -272,8 +272,13 @@ Parser.prototype.emitResult = function () {
   this.yamlish = ''
   this.yind = ''
 
-  if (!this.current)
+  if (!line) {
     return
+  }
+  // if (!this.current) {
+    this.current = new Result(line, this.count)
+    // return
+  // }
 
   var res = this.current
   this.current = null
