@@ -328,6 +328,21 @@ Parser.prototype._parse = function (line) {
   if (line === '\n')
     return
 
+  // assert from previous line
+  if (this.current) {
+    var indent = line.match(/^[ \t]+/)
+    if (indent) {
+      indent = indent[0]
+      // not beginning of yamlish, and not already in yamlish
+      if (line !== indent + '---\n' && !this.yind && !this.yamlish) {
+        this.emitResult()
+      }
+    // single line assert
+    } else {
+      this.emitResult()
+    }
+  }
+
   // After a bailout, everything is ignored
   if (this.bailedOut)
     return
