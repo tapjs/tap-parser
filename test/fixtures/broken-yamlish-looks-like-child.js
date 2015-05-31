@@ -2,6 +2,7 @@ module.exports =
 [ [ 'line', '1..3\n' ],
   [ 'plan', { start: 1, end: 3 } ],
   [ 'line', 'ok 1 -  callback happened\n' ],
+  [ 'assert', { ok: true, id: 1, name: 'callback happened' } ],
   [ 'line', '  ok:\n' ],
   [ 'extra', '  ok:\n' ],
   [ 'line', '    - I wished for a bailout!\n' ],
@@ -13,9 +14,8 @@ module.exports =
   [ 'line', ' ...\n' ],
   [ 'extra', ' ...\n' ],
   [ 'line', 'ok 2 -  child test\n' ],
-  [ 'assert', { ok: true, id: 1, name: 'callback happened' } ],
-  [ 'line', 'ok 3 -  should come last\n' ],
   [ 'assert', { ok: true, id: 2, name: 'child test' } ],
+  [ 'line', 'ok 3 -  should come last\n' ],
   [ 'assert', { ok: true, id: 3, name: 'should come last' } ],
   [ 'complete',
     { ok: true, count: 3, pass: 3, plan: { start: 1, end: 3 } } ] ]

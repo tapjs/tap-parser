@@ -17,8 +17,8 @@ module.exports =
           [ 'I wished for a bailout!',
             'lots of other shapes here can look like valid tap' ] } } ],
   [ 'line', 'ok 2 -  child test\n' ],
-  [ 'line', 'ok 3 -  should come last\n' ],
   [ 'assert', { ok: true, id: 2, name: 'child test' } ],
+  [ 'line', 'ok 3 -  should come last\n' ],
   [ 'assert', { ok: true, id: 3, name: 'should come last' } ],
   [ 'complete',
     { ok: true, count: 3, pass: 3, plan: { start: 1, end: 3 } } ] ]

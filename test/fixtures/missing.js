@@ -4,7 +4,6 @@ module.exports =
   [ 'line', '1..6\n' ],
   [ 'plan', { start: 1, end: 6 } ],
   [ 'line', 'ok\n' ],
-  [ 'line', 'ok\n' ],
   [ 'assert', { ok: true, id: 1 } ],
   [ 'line', 'ok\n' ],
   [ 'assert', { ok: true, id: 2 } ],
@@ -12,6 +11,7 @@ module.exports =
   [ 'assert', { ok: true, id: 3 } ],
   [ 'line', 'ok\n' ],
   [ 'assert', { ok: true, id: 4 } ],
+  [ 'line', 'ok\n' ],
   [ 'assert', { ok: true, id: 5 } ],
   [ 'complete',
     { ok: false, count: 5, pass: 5, plan: { start: 1, end: 6 } } ] ]
