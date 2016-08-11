@@ -22,8 +22,7 @@
         "end": 0,
         "skipAll": true,
         "skipReason": "skipping: rope"
-      },
-      "failures": []
+      }
     }
   ]
 ]

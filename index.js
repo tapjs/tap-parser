@@ -1,7 +1,6 @@
 // Transforms a stream of TAP into a stream of result objects
 // and string comments.  Emits "results" event with summary.
 var Writable = require('stream').Writable
-/* istanbul ignore if */
 if (!Writable) {
   try {
     Writable = require('readable-stream').Writable
@@ -26,12 +25,8 @@ function parseDirective (line) {
   var time = line.match(/^time=((?:[1-9][0-9]*|0)(?:\.[0-9]+)?)(ms|s)$/i)
   if (time) {
     var n = +time[1]
-    if (time[2] === 's') {
-      // JS does weird things with floats.  Round it off a bit.
-      n *= 1000000
-      n = Math.round(n)
-      n /= 1000
-    }
+    if (time[2] === 's')
+      n *= 1000
     return [ 'time', n ]
   }
 
@@ -117,7 +112,6 @@ function Parser (options, onComplete) {
   this.child = null
   this.current = null
   this.commentQueue = []
-  this.buffered = options.buffered || null
 
   this.count = 0
   this.pass = 0
@@ -154,6 +148,11 @@ Parser.prototype.processYamlish = function () {
   var yamlish = this.yamlish
   this.yamlish = ''
   this.yind = ''
+
+  if (!this.current) {
+    this.nonTap(yamlish)
+    return
+  }
 
   try {
     var diags = yaml.safeLoad(yamlish)
@@ -268,11 +267,8 @@ Parser.prototype.end = function (chunk, encoding, cb) {
     final.ok = true
   }
 
-  if (this.failures.length) {
+  if (this.failures.length)
     final.failures = this.failures
-  } else {
-    final.failures = []
-  }
 
   this.emit('complete', final)
 
@@ -329,22 +325,17 @@ Parser.prototype.emitResult = function () {
 }
 
 Parser.prototype.startChild = function (indent, line) {
-  var maybeBuffered = this.current && this.current.name.match(/{$/)
-  var streamComment = 0 === line.indexOf(indent + '# Subtest:')
-
-  if (!maybeBuffered && !streamComment) {
+  if (!line.substr(indent.length).match(/^# Subtest:/)) {
     this.nonTap(line)
     return
   }
 
-  if (streamComment)
-    this.emitResult()
+  this.emitResult()
 
   this.child = new Parser({
     indent: indent,
     parent: this,
-    level: this.level + 1,
-    buffered: this.current
+    level: this.level + 1
   })
 
   this.emit('child', this.child)
@@ -354,16 +345,7 @@ Parser.prototype.startChild = function (indent, line) {
     if (this.sawValidTap && !results.ok)
       self.ok = false
   })
-
-  line = line.substr(indent.length)
-  if (streamComment) {
-    this.child.emit('line', line)
-    this.child.emitComment(line)
-  } else {
-    this.current.name = this.current.name.replace(/{$/, '').trim()
-    this.child.emitComment('# Subtest: ' + this.current.name)
-    this.child._parse(line)
-  }
+  this.child.write(line.substr(indent.length))
 }
 
 Parser.prototype.emitComment = function (line) {
@@ -371,13 +353,6 @@ Parser.prototype.emitComment = function (line) {
     this.commentQueue.push(line)
   else
     this.emit('comment', line)
-}
-
-function maybeEnd (child, line) {
-  if (child.buffered)
-    return line.trim() === '}'
-  else
-    return /^(not )?ok/.test(line)
 }
 
 Parser.prototype._parse = function (line) {
@@ -430,11 +405,7 @@ Parser.prototype._parse = function (line) {
   }
 
   // still belongs to the child.
-  var indent = line.match(/^[ \t]*/)[0]
   if (this.child) {
-    if (indent && !this.child.indent) {
-      this.child.indent = indent
-    }
     if (line.indexOf(this.child.indent) === 0) {
       line = line.substr(this.child.indent.length)
       this.child.write(line)
@@ -444,20 +415,17 @@ Parser.prototype._parse = function (line) {
       this.emitComment(line)
       return
     }
-
-    // a buffered child test can only end on }
-    // streamed child test can only end when we get an test point line.
+    // a child test can only end when we get an test point line.
     // anything else is extra.
-    if (this.child.sawValidTap && !maybeEnd(this.child, line)) {
+    if (this.child.sawValidTap && !/^(not )?ok/.test(line)) {
       this.nonTap(line)
       return
     }
   }
 
-  // comment, but let "# Subtest:" comments start a streamed child
+  // comment, but let "# Subtest:" comments start a child
   var c = line.match(/^(\s+)?#(.*)/)
-  var isChildTest = c && /^ Subtest: /.test(c[2])
-  if (c && !isChildTest) {
+  if (c && !(c[1] && /^ Subtest: /.test(c[2]))) {
     this.emitComment(line)
     return
   }
@@ -469,14 +437,10 @@ Parser.prototype._parse = function (line) {
     return
   }
 
-  // the `# Subtest: <name>` comment is not guaranteed to be indented
-  // handle this by calling it a zero-width indent for now.
-  if (isChildTest && !indent) {
-    this.startChild('', line)
-    return
-  }
-
+  var indent = line.match(/^[ \t]+/)
   if (indent) {
+    indent = indent[0]
+
     // if we don't have a current res, then it can't be yamlish.
     // If it is a subtest command, then it's a child test.
     if (!this.current) {
@@ -501,9 +465,8 @@ Parser.prototype._parse = function (line) {
     // The whole yamlish chunk is garbage.
     if (indent.indexOf(this.yind) !== 0) {
       // oops!  was not actually yamlish, I guess.
-      // this is a case where the indent is shortened mid-yamlish block
       // treat as garbage
-      this.nonTap(this.yind + '---\n' + this.yamlish + line)
+      this.nonTap(this.yamlish + line)
       this.emitResult()
       return
     }
@@ -522,7 +485,7 @@ Parser.prototype._parse = function (line) {
 
   // not indented.  if we were doing yamlish, then it didn't go good
   if (this.yind) {
-    this.nonTap(this.yind + '---\n' + this.yamlish)
+    this.nonTap(this.yamlish)
     this.yamlish = ''
     this.yind = ''
   }
@@ -556,11 +519,6 @@ Parser.prototype._parse = function (line) {
     if (this.count !== 0 || this.planEnd === 0)
       this.postPlan = true
 
-    return
-  }
-
-  if (this.child && this.child.buffered && line.trim() === '}') {
-    this.emitResult()
     return
   }
 

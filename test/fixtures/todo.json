@@ -148,8 +148,7 @@
                   "plan": {
                     "start": 1,
                     "end": 2
-                  },
-                  "failures": []
+                  }
                 }
               ]
             ]
@@ -199,8 +198,7 @@
               "plan": {
                 "start": 1,
                 "end": 3
-              },
-              "failures": []
+              }
             }
           ]
         ]
@@ -270,8 +268,7 @@
           "plan": {
             "start": 1,
             "end": 3
-          },
-          "failures": []
+          }
         }
       ]
     ]
@@ -415,8 +412,7 @@
           "plan": {
             "start": 1,
             "end": 3
-          },
-          "failures": []
+          }
         }
       ]
     ]
@@ -469,8 +465,7 @@
       "plan": {
         "start": 1,
         "end": 2
-      },
-      "failures": []
+      }
     }
   ]
 ]

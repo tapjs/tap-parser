@@ -38,8 +38,7 @@
         "end": 0,
         "skipAll": true,
         "skipReason": "SKIP Insufficient skipping"
-      },
-      "failures": []
+      }
     }
   ]
 ]

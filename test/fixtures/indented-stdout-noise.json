@@ -101,8 +101,7 @@
                   "plan": {
                     "start": 1,
                     "end": 0
-                  },
-                  "failures": []
+                  }
                 }
               ]
             ]
@@ -144,8 +143,7 @@
                 "start": 1,
                 "end": 0,
                 "skipAll": true
-              },
-              "failures": []
+              }
             }
           ]
         ]
@@ -455,8 +453,7 @@
           "plan": {
             "start": 1,
             "end": 1
-          },
-          "failures": []
+          }
         }
       ]
     ]
