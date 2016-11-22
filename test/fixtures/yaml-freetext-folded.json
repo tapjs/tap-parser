@@ -1,0 +1,121 @@
+[
+  [
+    "line",
+    "TAP Version 13\n"
+  ],
+  [
+    "version",
+    13
+  ],
+  [
+    "line",
+    "1..1\n"
+  ],
+  [
+    "plan",
+    {
+      "start": 1,
+      "end": 1
+    }
+  ],
+  [
+    "line",
+    "not ok 1 Numbers equal\n"
+  ],
+  [
+    "line",
+    "  ---\n"
+  ],
+  [
+    "line",
+    "  message: \"Failed with error '42 is not 43'\"\n"
+  ],
+  [
+    "line",
+    "  severity: fail\n"
+  ],
+  [
+    "line",
+    "  data:\n"
+  ],
+  [
+    "line",
+    "    got: 42\n"
+  ],
+  [
+    "line",
+    "    expected: 43\n"
+  ],
+  [
+    "line",
+    "    label: >\n"
+  ],
+  [
+    "line",
+    "      Expected the test to give the value 43. This is integral to the running of the application.\n"
+  ],
+  [
+    "line",
+    "      However, I was only given the number\n"
+  ],
+  [
+    "line",
+    "      42\n"
+  ],
+  [
+    "line",
+    "  ...\n"
+  ],
+  [
+    "assert",
+    {
+      "ok": false,
+      "id": 1,
+      "name": "Numbers equal",
+      "diag": {
+        "message": "Failed with error '42 is not 43'",
+        "severity": "fail",
+        "data": {
+          "got": 42,
+          "expected": 43,
+          "label": "Expected the test to give the value 43. This is integral to the running of the application. However, I was only given the number 42\n"
+        }
+      }
+    }
+  ],
+  [
+    "complete",
+    {
+      "ok": false,
+      "count": 1,
+      "pass": 0,
+      "fail": 1,
+      "bailout": false,
+      "todo": 0,
+      "skip": 0,
+      "plan": {
+        "start": 1,
+        "end": 1,
+        "skipAll": false,
+        "skipReason": "",
+        "comment": ""
+      },
+      "failures": [
+        {
+          "ok": false,
+          "id": 1,
+          "name": "Numbers equal",
+          "diag": {
+            "message": "Failed with error '42 is not 43'",
+            "severity": "fail",
+            "data": {
+              "got": 42,
+              "expected": 43,
+              "label": "Expected the test to give the value 43. This is integral to the running of the application. However, I was only given the number 42\n"
+            }
+          }
+        }
+      ]
+    }
+  ]
+]

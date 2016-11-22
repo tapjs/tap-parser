@@ -1,0 +1,14 @@
+TAP Version 13
+1..1
+not ok 1 Numbers equal
+  ---
+  message: "Failed with error '42 is not 43'"
+  severity: fail
+  data:
+    got: 42
+    expected: 43
+    label: >
+      Expected the test to give the value 43. This is integral to the running of the application.
+      However, I was only given the number
+      42
+  ...
