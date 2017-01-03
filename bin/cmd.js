@@ -21,6 +21,9 @@ args.forEach(function (arg, i) {
 
   if (arg === '-h' || arg === '--help')
     usage()
+
+  if (arg === '-v' || arg === '--version')
+    console.log(require('../package.json').version)
 })
 
 function usage () {
