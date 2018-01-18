@@ -36,9 +36,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/substack/tap-parser.git"
+    "url": "git://github.com/tapjs/tap-parser.git"
   },
-  "homepage": "https://github.com/substack/tap-parser",
+  "homepage": "https://github.com/tapjs/tap-parser",
   "keywords": [
     "tap",
     "test",
