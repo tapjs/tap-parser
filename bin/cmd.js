@@ -8,7 +8,7 @@ var commandLineArgs = require('command-line-args')
 var yaml = require('js-yaml')
 
 var option = commandLineArgs([
-  { name: 'json', alias: 'j', type: Number, defaultValue: 2 },
+  { name: 'json', alias: 'j', type: Number },
   { name: 'tap', alias: 't', type: Boolean },
   { name: 'bail', alias: 'b', type: Boolean },
   { name: 'ignore-all-whitespace', alias: 'w', type: Boolean },
@@ -19,6 +19,8 @@ var option = commandLineArgs([
 
 if (option.version) return version()
 if (option.help) return usage()
+
+if (option.json === null) option.json = 2
 
 var parser = new Parser({
   bail: option.bail,
