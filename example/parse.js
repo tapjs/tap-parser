@@ -1,5 +1,5 @@
 var parser = require('../');
-var p = parser(function (results) {
+var p = new Parser(function (results) {
     console.dir(results);
 });
 process.stdin.pipe(p);
