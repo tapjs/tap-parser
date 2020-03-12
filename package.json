@@ -3,6 +3,7 @@
   "version": "10.0.1",
   "description": "parse the test anything protocol",
   "main": "index.js",
+  "types": "index.d.ts",
   "bin": {
     "tap-parser": "bin/cmd.js"
   },
