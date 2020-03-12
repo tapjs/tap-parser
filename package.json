@@ -20,8 +20,8 @@
     "build": "browserify index.js > browser.js",
     "snap": "tap",
     "test": "tap",
-    "preversion": "npm test",
-    "postversion": "npm run build && npm publish",
+    "preversion": "npm test && npm run build",
+    "postversion": "npm publish",
     "postpublish": "git push origin --follow-tags"
   },
   "testling": {
