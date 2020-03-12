@@ -2,7 +2,7 @@
   "name": "tap-parser",
   "version": "10.0.1",
   "description": "parse the test anything protocol",
-  "main": "dist.js",
+  "main": "index.js",
   "bin": {
     "tap-parser": "bin/cmd.js"
   },
@@ -17,11 +17,11 @@
     "tap": "^14.4.1"
   },
   "scripts": {
-    "build": "browserify index.js > dist.js",
+    "build": "browserify index.js > browser.js",
     "snap": "tap",
     "test": "tap",
     "preversion": "npm test",
-    "postversion": "npm publish",
+    "postversion": "npm run build && npm publish",
     "postpublish": "git push origin --follow-tags"
   },
   "testling": {
