@@ -51,8 +51,9 @@
   "optionalDependencies": {},
   "files": [
     "index.js",
-    "browser.js",
     "index.d.ts",
+    "browser.js",
+    "browser.d.ts",
     "bin/cmd.js"
   ],
   "tap": {
