@@ -2501,7 +2501,7 @@ exports[`test/cmd.js TAP basic passing_child_with_broken_tap t > stderr 1`] = `
 `
 
 exports[`test/cmd.js TAP help > error 1`] = `
-undefined
+0
 `
 
 exports[`test/cmd.js TAP help > output 1`] = `

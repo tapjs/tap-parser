@@ -17,17 +17,18 @@ const {runInThisContext} = require('vm')
 const code = require('fs').readFileSync(bin, 'utf8').replace(/^#!.*/, '')
 const EE = require('events')
 const run = (input, args, cb) => {
-  let exitCode = 0
   let stdout = ''
   let stderr = ''
 
   const proc = new EE()
+  proc.exitCode = 0
+
   let exited = false
   proc.exit = code => {
-    exitCode = code || 0
+    proc.exitCode = code || 0
     if (!exited) {
       exited = true
-      cb(code, stdout, stderr)
+      cb(proc.exitCode, stdout, stderr)
     }
   }
   proc.stdin = new Minipass()
@@ -54,7 +55,7 @@ const run = (input, args, cb) => {
 
   if (!exited) {
     exited = true
-    cb(exitCode, stdout, stderr)
+    cb(proc.exitCode, stdout, stderr)
   }
 }
 

@@ -161,6 +161,6 @@ if (json === 'lines' || json === 'silent') {
     const summary = result[ result.length - 1 ]
     console.log(format(result))
     if (summary[0] !== 'complete' || !summary[1].ok)
-      process.exit(1)
+      process.exitCode = 1
   })
 }
